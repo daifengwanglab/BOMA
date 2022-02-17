@@ -28,6 +28,6 @@ We provided two examples to desmontrate the application of BOMA for RNA-seq data
 1. [Align bulk RNA-seq datasets](https://github.com/cyang433/human-organoid)
 2. [Align Single-cell RNA-seq datasets](https://github.com/cyang433/human_organoid_single_cell)
 
-An [online web App](https://github.com/Oafish1/ManiNetCluster-Visualization) to perform alignment with user provided RNA-seq matrices and correspondence matrix.
+An online web App to perform alignment with user provided RNA-seq matrices and correspondence matrix can be found [here](https://github.com/Oafish1/ManiNetCluster-Visualization).
 
 
