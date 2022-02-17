@@ -21,7 +21,7 @@ install.packages(c('rdist','SCORPIUS','Rmagic','pheatmap','Linnorm','reshape2','
 Besides,some functions for processing data are also needed for our project.
 ```R
 source('../src/func.r')
-
+```
 
 ## DEMOs
 We provided two examples to desmontrate the application of BOMA for RNA-seq datasets alignment between human brain versus organoid.
