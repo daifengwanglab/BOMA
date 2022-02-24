@@ -21,9 +21,9 @@ Besides,some functions for processing data are also needed for our project.
 ```R
 source('../src/func.r')
 ```
-## demo
+## DEMO
 
-### Step 0: data preprocessing
+### Step 1: data preprocessing
 We performed manifold alignment between the bulk transcriptomic data of human brain from BrainSpan and the bulk transcriptomic measurement of organoids in Dataset 5(Table S1).
 
 BrainSpan is a landscape measurement database of the developmental procedures of the human brain,covering the in-vivo human brain development from 8PCW until 40 years old,including 28 time points, 36 samples and 25 regions. Dataset 5 is a measurement of longer-term cultured organoids,covering the in vitro 3D culturing of human cortical spheroid (hCS) from 25 days up until 2 years,including 12 time points and 62 samples.
@@ -49,7 +49,7 @@ deg_list1 = DE.list(form.data1,form.meta1)
 deg_list2 = DE.list(form.data2,form.meta2)
 ```
 
-### Step 1: Focus on expression of interest
+### Step 2: Focus on expression of interest
 To focus our analysis within brain development only, we attempted to identify 1533 genes most related to human brain development.We take the intersection of genes that are differentially expressed in human and organoid cells, and then take the intersection with these 1533 genes to get the genes we are interested in.
 ```R
 sel.genes = intersect(intersect(deg_list1,deg_list2),unique(all.rec$gene))  # Select genes of interest
@@ -70,7 +70,7 @@ sel.meta2=sel.meta2[order(sel.meta2$time),]
 ps.mat1 = t(exp1);ps.time1=sel.meta1$time
 ps.mat2 = t(exp2);ps.time2=sel.meta2$time
 ```
-### Step 2: Alignment
+### Step 3: Alignment
 ManiNetCluster employs manifold learning to uncover and match local and non-linear structures among networks, and identifies cross-network functional links.We use ManiNetCluster simultaneously aligns and clusters co-expression.
 ```R
 algn_res = runMSMA_dtw(ps.mat1,ps.mat2)
@@ -79,7 +79,7 @@ df2$time = c(sel.meta1$time,sel.meta2$time)  # Add the time information to the a
 ```
 
 
-### Step 3: Visualization
+### Step 4: Visualization
 Use the aligned result to draw 3D scatter plots for human and organoid,visualize the time information of each point in color.
 ```R
 # calculate pairwise distances between cells after MSMA
@@ -103,7 +103,7 @@ Heatmap(sim_mat,name='human_vs_humanOrg',show_row_names=F,show_column_names=F,cl
 left_annotation=annot1,top_annotation=annot2,col=colorRamp2(c(0.8,max(sim_dist)),c('white','red')))
 dev.off()
 ```
-<div align=center><img width="500" height="500" src="https://github.com/cyang433/human-organoid/blob/main/image/hmtp_00.png"/></div>
+<div align=center><img width="500" height="500" src="https://github.com/daifengwanglab/BOMA/blob/main/image/hmtp_00.png"/></div>
 
 Embedding of human brain samples in the aligned manifold space. Dots were colored by brain developmental stages.
 ```R
@@ -146,9 +146,9 @@ legend("top", legend = levels(as.factor(res$data)), pch = c(16, 17),inset = -0.1
 legend("right", legend = levels(as.factor(res$time)), col = c(time.cols2),pch=16,inset = -0.05, xpd = TRUE, horiz = F,cex=1.2)
 dev.off()
 ```
-<img width="400" height="400" src="https://github.com/cyang433/human-organoid/blob/main/image/3D1_300_30_00.png"/></div><img width="400" height="400" src="https://github.com/cyang433/human-organoid/blob/main/image/3D1_200_60-2_00.png"/></div>
+<img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D1_300_30_00.png"/></div><img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D1_200_60-2_00.png"/></div>
 
-<img width="400" height="400" src="https://github.com/cyang433/human-organoid/blob/main/image/3D2_300_30_00.png"/></div><img width="400" height="400" src="https://github.com/cyang433/human-organoid/blob/main/image/3D2_200_60_00.png"/></div>
+<img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D2_300_30_00.png"/></div><img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D2_200_60_00.png"/></div>
 
 
 Finally,draw the corrplot on timepoint wise averaged similarity.The outcome shows the similarity of aligned samples. 
@@ -177,5 +177,5 @@ pdf('corr.plot.bulk.human.vs.org1.pdf')
 corrplot(sim_avg,col=rev(colorRampPalette(brewer.pal(9,'PRGn'))(200)),cl.lim=c(0.7,1),is.corr=F,tl.col="black")
 dev.off()
 ```
-<div align=center><img width="500" height="500" src="https://github.com/cyang433/human-organoid/blob/main/image/corr.plot.bulk.human.vs.org1_00.png"/></div>
+<div align=center><img width="500" height="500" src="https://github.com/daifengwanglab/BOMA/blob/main/image/corr.plot.bulk.human.vs.org1_00.png"/></div>
 
