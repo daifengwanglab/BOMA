@@ -22,7 +22,7 @@ Besides,some functions for processing data are also needed for our project.
 source('../src/func.r')
 ```
 
-## online webApp
+## Online webApp
 An online web App to perform alignment with user provided RNA-seq matrices and correspondence matrix can be found [here](https://github.com/Oafish1/ManiNetCluster-Visualization).
 
 
