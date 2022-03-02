@@ -27,7 +27,7 @@ An online web App to perform manifold alignment with user provided RNA-seq matri
 
 
 ## Demo
-### Data description[?]
+### Data description[?time]
 we applied BOMA to align developmental gene expression data between brain samples from BrainSpan4 (N=460 from 16 human brain regions, Table S1, Dataset 1, Table S2) with organoid samples from a recent long-term cultured ‘human cortical spheroid (hCS)’ organoid bulk RNA-seq dataset13 (N=62, Dataset 6). 
 
 We performed manifold alignment between the bulk transcriptomic data of human brain from BrainSpan and the bulk transcriptomic measurement of organoids in Dataset 5(Table S1).
