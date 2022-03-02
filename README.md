@@ -11,7 +11,7 @@ As shown in the flowchart below,here we introduce the comparative analysis pipel
 <div align=center><img width="1000" height="500" src="https://github.com/daifengwanglab/BOMA/blob/main/image/1.png"/></div>
 
 ## Software Requirements
-The analysis is based on R 4.0. 
+The following analysis is based on R 4.0. 
 Users should install the following packages prior to using the code:
 ```R
 install.packages(c('rdist','SCORPIUS','Rmagic','pheatmap','Linnorm','reshape2','reticulate','plyr','RColorBrewer','stringr','limma','ManiNetCluster','ComplexHeatmap','circlize'))
@@ -23,16 +23,18 @@ source('../src/func.r')
 ```
 
 ## Online webApp
-An online web App to perform alignment with user provided RNA-seq matrices and correspondence matrix can be found [here](https://github.com/Oafish1/ManiNetCluster-Visualization).
+An online web App to perform manifold alignment with user provided RNA-seq matrices and correspondence matrix can be found [here](https://github.com/Oafish1/ManiNetCluster-Visualization).
 
 
-## DEMO
+## Demo
+### Data description[?]
+we applied BOMA to align developmental gene expression data between brain samples from BrainSpan4 (N=460 from 16 human brain regions, Table S1, Dataset 1, Table S2) with organoid samples from a recent long-term cultured ‘human cortical spheroid (hCS)’ organoid bulk RNA-seq dataset13 (N=62, Dataset 6). 
 
-### Step 1: data preprocessing
 We performed manifold alignment between the bulk transcriptomic data of human brain from BrainSpan and the bulk transcriptomic measurement of organoids in Dataset 5(Table S1).
 
 BrainSpan is a landscape measurement database of the developmental procedures of the human brain,covering the in-vivo human brain development from 8PCW until 40 years old,including 28 time points, 36 samples and 25 regions. Dataset 5 is a measurement of longer-term cultured organoids,covering the in vitro 3D culturing of human cortical spheroid (hCS) from 25 days up until 2 years,including 12 time points and 62 samples.
-
+### Step 1: Data preprocessing
+rdata1, rdata2...[?]
 ```R
 load('bulk_start.RData')
 rdata1 = rdata_human; meta1=meta_human
@@ -54,7 +56,7 @@ deg_list1 = DE.list(form.data1,form.meta1)
 deg_list2 = DE.list(form.data2,form.meta2)
 ```
 
-### Step 2: Focus on expression of interest
+### Step 2: Feature(Gene) selection
 To focus our analysis within brain development only, we attempted to identify 1533 genes most related to human brain development.We take the intersection of genes that are differentially expressed in human and organoid cells, and then take the intersection with these 1533 genes to get the genes we are interested in.
 ```R
 sel.genes = intersect(intersect(deg_list1,deg_list2),unique(all.rec$gene))  # Select genes of interest
@@ -75,7 +77,7 @@ sel.meta2=sel.meta2[order(sel.meta2$time),]
 ps.mat1 = t(exp1);ps.time1=sel.meta1$time
 ps.mat2 = t(exp2);ps.time2=sel.meta2$time
 ```
-### Step 3: Alignment
+### Step 3: Manifold Alignment
 ManiNetCluster employs manifold learning to uncover and match local and non-linear structures among networks, and identifies cross-network functional links.We use ManiNetCluster simultaneously aligns and clusters co-expression.
 ```R
 algn_res = runMSMA_dtw(ps.mat1,ps.mat2)
@@ -84,7 +86,7 @@ df2$time = c(sel.meta1$time,sel.meta2$time)  # Add the time information to the a
 ```
 
 
-### Step 4: Visualization
+### Step 4: Downstream analysis
 Use the aligned result to draw 3D scatter plots for human and organoid,visualize the time information of each point in color.
 ```R
 # calculate pairwise distances between cells after MSMA
