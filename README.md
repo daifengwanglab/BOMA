@@ -87,8 +87,9 @@ df2$time = c(sel.meta1$time,sel.meta2$time)  # Add the time information to the a
 ```
 
 
-### Step 4: Downstream analysis
-Heatmap for visualizing pairwise similarity between aligned samples. 
+### Step 4: Downstream analysis and visualization of alignment results
+Below, we show 3 ways for analyzing BOMA results.
+1. Heatmap for visualizing pairwise similarity between aligned samples. 
 ```R
 # calculate pairwise distances between cells after MSMA
 pair_dist = apply(df2[df2$data=='sample1',c(3:5)],1,function(x) {
@@ -113,7 +114,7 @@ dev.off()
 ```
 <div align=center><img width="500" height="500" src="https://github.com/daifengwanglab/BOMA/blob/main/image/hmtp_00.png"/></div>
 
-Embedding of human brain and organoid samples in the aligned manifold space. Brain samples were colored by brain developmental stages. Organoid samples were colored by cultured days.
+2. Embedding of human brain and organoid samples in the aligned manifold space. Brain samples were colored by brain developmental stages. Organoid samples were colored by cultured days.
 ```R
 # plot 3D trajectors
 #scatter plot for human brain samples
@@ -155,7 +156,7 @@ dev.off()
 <img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D2_300_30_00.png"/></div><img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D2_200_60_00.png"/></div>
 
 
-Corrplot to show the averaged similarity accross time points.
+3. Corrplot to show the averaged similarity accross time points.
 ```R
 library(corrplot)
 sim_avg = matrix(0,nrow=length(unique(ps.time1)),ncol=length(unique(ps.time2)))
