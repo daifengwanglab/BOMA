@@ -26,15 +26,16 @@ source('../src/func.r')
 An online web App to perform manifold alignment with user provided RNA-seq matrices and correspondence matrix can be found [here](https://github.com/Oafish1/ManiNetCluster-Visualization).
 
 
-## Demo
-### Data description[?time]
-we applied BOMA to align developmental gene expression data between brain samples from BrainSpan4 (N=460 from 16 human brain regions, Table S1, Dataset 1, Table S2) with organoid samples from a recent long-term cultured ‘human cortical spheroid (hCS)’ organoid bulk RNA-seq dataset13 (N=62, Dataset 6). 
+## Demo for aligning bulk RNA-seq between human brain and human organoid
+### Data description
+we applied BOMA to align developmental gene expression data between brain samples from BrainSpan (Li M, et. al., Science, 2018) (N=460 from 16 human brain regions) with organoid samples from a recent long-term cultured ‘human cortical spheroid (hCS)’ organoid bulk RNA-seq dataset13 (N=62). BrainSpan covers in-vivo human brain development from 8PCW until 40 years old, including 28 time points. The organoid dataset covers the in vitro 3D culturing of human cortical spheroid (hCS) from 25 days up until 2 years,including 12 time points.
+Below shows the whole pipeline for aligning the two datasets, while the alignment (Step 3) took less 0.3s to complemet.
 
-We performed manifold alignment between the bulk transcriptomic data of human brain from BrainSpan and the bulk transcriptomic measurement of organoids in Dataset 5(Table S1).
 
-BrainSpan is a landscape measurement database of the developmental procedures of the human brain,covering the in-vivo human brain development from 8PCW until 40 years old,including 28 time points, 36 samples and 25 regions. Dataset 5 is a measurement of longer-term cultured organoids,covering the in vitro 3D culturing of human cortical spheroid (hCS) from 25 days up until 2 years,including 12 time points and 62 samples.
+
+
 ### Step 1: Data preprocessing
-rdata1, rdata2...[?]
+rdata1, rdata2 are the count matrices of the two datasets. 
 ```R
 load('bulk_start.RData')
 rdata1 = rdata_human; meta1=meta_human
@@ -57,7 +58,7 @@ deg_list2 = DE.list(form.data2,form.meta2)
 ```
 
 ### Step 2: Feature(Gene) selection
-To focus our analysis within brain development only, we attempted to identify 1533 genes most related to human brain development.We take the intersection of genes that are differentially expressed in human and organoid cells, and then take the intersection with these 1533 genes to get the genes we are interested in.
+To focus our analysis within brain development only, we identify 1533 genes (see paper) most related to human brain development .We take the intersection of genes that are differentially expressed in human and organoid cells, and then intersect with these 1533 genes for feature selection.
 ```R
 sel.genes = intersect(intersect(deg_list1,deg_list2),unique(all.rec$gene))  # Select genes of interest
 sel.data1 = form.data1[row.names(form.data1) %in% sel.genes,]  # Select expression based genes
@@ -77,8 +78,8 @@ sel.meta2=sel.meta2[order(sel.meta2$time),]
 ps.mat1 = t(exp1);ps.time1=sel.meta1$time
 ps.mat2 = t(exp2);ps.time2=sel.meta2$time
 ```
-### Step 3: Manifold Alignment
-ManiNetCluster employs manifold learning to uncover and match local and non-linear structures among networks, and identifies cross-network functional links.We use ManiNetCluster simultaneously aligns and clusters co-expression.
+### Step 3: BOMA Manifold Alignment
+Manifold learning to uncover and match local and non-linear structures among datasets.
 ```R
 algn_res = runMSMA_dtw(ps.mat1,ps.mat2)
 df2 = algn_res[[3]]
@@ -87,7 +88,7 @@ df2$time = c(sel.meta1$time,sel.meta2$time)  # Add the time information to the a
 
 
 ### Step 4: Downstream analysis
-Use the aligned result to draw 3D scatter plots for human and organoid,visualize the time information of each point in color.
+Heatmap for visualizing pairwise similarity between aligned samples. 
 ```R
 # calculate pairwise distances between cells after MSMA
 pair_dist = apply(df2[df2$data=='sample1',c(3:5)],1,function(x) {
@@ -112,12 +113,13 @@ dev.off()
 ```
 <div align=center><img width="500" height="500" src="https://github.com/daifengwanglab/BOMA/blob/main/image/hmtp_00.png"/></div>
 
-Embedding of human brain samples in the aligned manifold space. Dots were colored by brain developmental stages.
+Embedding of human brain and organoid samples in the aligned manifold space. Brain samples were colored by brain developmental stages. Organoid samples were colored by cultured days.
 ```R
 # plot 3D trajectors
+#scatter plot for human brain samples
 pdf('3D1.pdf')
 time.cols1 = colorRampPalette(brewer.pal(n=9,'Greens'))(12)
-#time.cols1 = c(brewer.pal(9,'YlGnBu')[c(2:9)],brewer.pal(11,'BrBG')[c(8:11)])
+
 res = data.frame(df2[df2$data=='sample1',])
 res0 = data.frame(df2)
 library(plot3D)
@@ -130,13 +132,8 @@ legend("right", legend = levels(as.factor(res$time)), col = c(time.cols1),pch=16
 dev.off()
 ```
 
-Embedding of human organoid samples in the manifold space. Dots were colored by the days of culturing. 
 ```R
-#time.cols2 = c(brewer.pal(9,'YlOrRd')[c(2:9)],brewer.pal(11,'BrBG')[rev(1:4)])
-#c25 <- c( "dodgerblue2", "#E31A1C",  "green4", "#6A3D9A",  "#FF7F00",  "black", "gold1", "skyblue2", "#FB9A99",  "palegreen2", "#CAB2D6",  "#FDBF6F", "gray70", "khaki2", "maroon", "orchid1", "deeppink1", "blue1", "steelblue4", "darkturquoise", "green1", "yellow4", "yellow3", "darkorange4", "brown")
-#time.cols2 = c25[1:12]
-
-#time.cols2 = colorRampPalette(brewer.pal(9, "YlOrBr"))(12) #for human
+#scatter plot for organoid samples
 time.cols2 = colorRampPalette(brewer.pal(9, "Blues"))(12) #for organoid
 
 res = data.frame(df2[df2$data=='sample2',])
@@ -158,7 +155,7 @@ dev.off()
 <img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D2_300_30_00.png"/></div><img width="400" height="400" src="https://github.com/daifengwanglab/BOMA/blob/main/image/3D2_200_60_00.png"/></div>
 
 
-Finally,draw the corrplot on timepoint wise averaged similarity.The outcome shows the similarity of aligned samples. 
+Corrplot to show the averaged similarity accross time points.
 ```R
 library(corrplot)
 sim_avg = matrix(0,nrow=length(unique(ps.time1)),ncol=length(unique(ps.time2)))
