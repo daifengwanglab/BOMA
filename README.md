@@ -26,17 +26,19 @@ source('../src/func.r')
 An online web App to perform manifold alignment with user provided RNA-seq matrices and correspondence matrix can be found [here](https://github.com/Oafish1/ManiNetCluster-Visualization).
 
 
-## Demo for aligning bulk RNA-seq between human brain and human organoid
+## Demo for aligning bulk RNA-seq between human brain and organoid
 ### Data description
-we applied BOMA to align developmental gene expression data between brain samples from BrainSpan (Li M, et. al., Science, 2018) (N=460 from 16 human brain regions) with organoid samples from a recent long-term cultured ‘human cortical spheroid (hCS)’ organoid bulk RNA-seq dataset13 (N=62). BrainSpan covers in-vivo human brain development from 8PCW until 40 years old, including 28 time points. The organoid dataset covers the in vitro 3D culturing of human cortical spheroid (hCS) from 25 days up until 2 years,including 12 time points.
+we applied BOMA to align developmental gene expression data between brain samples from BrainSpan (Li M, et. al., Science, 2018) (N=460 from 16 human brain regions) with organoid samples from a recent long-term cultured ‘human cortical spheroid (hCS)’ organoid bulk RNA-seq dataset13 (N=62). BrainSpan covers in-vivo human brain development from 8PCW until 40 years old, including 28 time points. The organoid dataset covers the in vitro 3D culturing of human cortical spheroid (hCS) from 25 days up until 2 years,including 12 time points.  
 Below shows the whole pipeline for aligning the two datasets, while the alignment (Step 3) took less 0.3s to complemet.
 
 
 
 
 ### Step 1: Data preprocessing
-rdata1, rdata2 are the count matrices of the two datasets. 
+load and pre-process the gene expression matrices 
 ```R
+#rdata1, rdata2 are the count matrices of the two datasets.
+#meta1, meta2 contains the meta information for two datasets
 load('bulk_start.RData')
 rdata1 = rdata_human; meta1=meta_human
 rdata2 = rdata_organoid; meta2=meta_organoid
@@ -50,15 +52,16 @@ form.meta2=meta2
 form.meta1$time=form.meta1$Period   
 form.meta2$time=form.meta2$Days
 ```
-Then we use the limma package to perform differential analysis at each time to find differentially expressed genes.
+
+
+### Step 2: Feature(Gene) selection
+To focus our analysis within brain development only, we identified 1,533 genes (see paper) most related to human brain development. We took the intersection of genes that are differentially expressed in human and organoid cells, and then intersected with these 1,533 genes for feature selection.  
+We use 'limma' package to perform differential analysis at each time to find differentially expressed genes.
 ```R
 # The specific information of a function is in "func.r" 
 deg_list1 = DE.list(form.data1,form.meta1)
 deg_list2 = DE.list(form.data2,form.meta2)
 ```
-
-### Step 2: Feature(Gene) selection
-To focus our analysis within brain development only, we identify 1533 genes (see paper) most related to human brain development .We take the intersection of genes that are differentially expressed in human and organoid cells, and then intersect with these 1533 genes for feature selection.
 ```R
 sel.genes = intersect(intersect(deg_list1,deg_list2),unique(all.rec$gene))  # Select genes of interest
 sel.data1 = form.data1[row.names(form.data1) %in% sel.genes,]  # Select expression based genes
